@@ -1,6 +1,6 @@
 {
-  "name": "marvinpoehls/adressvalidation",
-  "description": "Adress validator which checks whether the zip code and city entered in the checkout match.",
+  "name": "marvinpoehls/addressvalidation",
+  "description": "Address validator which checks whether the zip code and city entered in the checkout match.",
   "version": "1.0",
   "type": "oxideshop-module",
   "authors": [
@@ -12,12 +12,12 @@
   ],
   "extra": {
     "oxideshop": {
-      "target-directory": "MarvinPoehls/AdressValidation"
+      "target-directory": "MarvinPoehls/AddressValidation"
     }
   },
   "autoload": {
     "psr-4": {
-      "MarvinPoehls\\AdressValidation\\": "./"
+      "MarvinPoehls\\AddressValidation\\": "./"
     }
   }
 }

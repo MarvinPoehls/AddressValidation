@@ -11,7 +11,7 @@ $sMetadataVersion = '2.0';
 $aModule = [
     'id'           => 'addressvalidation',
     'title'  => [
-        'de' => 'Addressvalidierung',
+        'de' => 'Adressvalidierung',
         'en' => 'Address validation',
     ],
     'description'  => [
