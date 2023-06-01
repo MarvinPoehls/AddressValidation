@@ -24,13 +24,17 @@ $aModule = [
     'url'          => 'https://www.fatchip.de/',
     'email'        => 'marvin.poehls@fatchip.de',
     'extend'       => [
-
+        \OxidEsales\Eshop\Application\Controller\Admin\ModuleConfiguration::class => \MarvinPoehls\AdressValidation\Controller\ModuleConfiguration::class,
     ],
     'blocks' => [
-
+        [
+            'template' => 'module_config.tpl',
+            'block' => 'admin_module_config_var',
+            'file' => 'adress_validator_module_config_var.tpl'
+        ],
     ],
     'settings' => [],
     'events' => [
-        'onActivate' => '\MarvinPoehls\AdressValidation\Core\Events\Setup::onActivate',
+        'onActivate' => 'MarvinPoehls\AdressValidation\Core\Events\Setup::onActivate',
     ]
 ];
