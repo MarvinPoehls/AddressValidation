@@ -9,10 +9,10 @@ $sMetadataVersion = '2.0';
  * Module information
  */
 $aModule = [
-    'id'           => 'adressvalidation',
+    'id'           => 'addressvalidation',
     'title'  => [
-        'de' => 'Adressvalidierung',
-        'en' => 'Adress validation',
+        'de' => 'Addressvalidierung',
+        'en' => 'Address validation',
     ],
     'description'  => [
         'de' => 'Modul welches prüft ob die im Checkout eingegebene PLZ und Stadt zu einander passen.',
@@ -24,17 +24,17 @@ $aModule = [
     'url'          => 'https://www.fatchip.de/',
     'email'        => 'marvin.poehls@fatchip.de',
     'extend'       => [
-        \OxidEsales\Eshop\Application\Controller\Admin\ModuleConfiguration::class => \MarvinPoehls\AdressValidation\Controller\ModuleConfiguration::class,
+        \OxidEsales\Eshop\Application\Controller\Admin\ModuleConfiguration::class => \MarvinPoehls\AddressValidation\Controller\ModuleConfiguration::class,
     ],
     'blocks' => [
         [
             'template' => 'module_config.tpl',
             'block' => 'admin_module_config_var',
-            'file' => 'adress_validator_module_config_var.tpl'
+            'file' => 'address_validator_module_config_var.tpl'
         ],
     ],
     'settings' => [],
     'events' => [
-        'onActivate' => 'MarvinPoehls\AdressValidation\Core\Events\Setup::onActivate',
+        'onActivate' => 'MarvinPoehls\AddressValidation\Core\Events\Setup::onActivate',
     ]
 ];

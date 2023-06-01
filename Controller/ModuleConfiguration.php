@@ -1,6 +1,6 @@
 <?php
 
-namespace MarvinPoehls\AdressValidation\Controller;
+namespace MarvinPoehls\AddressValidation\Controller;
 
 class ModuleConfiguration extends ModuleConfiguration_parent
 {

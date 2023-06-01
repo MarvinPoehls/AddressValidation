@@ -4,6 +4,6 @@ $sLangName = 'Deutsch';
 
 $aLang = [
     'charset' => 'UFT-8',
-    'SHOP_MODULE_GROUP_MP_ADRESS_VALIDATION' => 'Datei Upload',
-    'SHOP_MODULE_mpAdressFile' => '',
+    'SHOP_MODULE_GROUP_MP_ADDRESS_VALIDATION' => 'Datei Upload',
+    'SHOP_MODULE_mpAddressFile' => '',
 ];

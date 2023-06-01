@@ -1,6 +1,6 @@
 <?php
 
-namespace MarvinPoehls\AdressValidation\Core\Events;
+namespace MarvinPoehls\AddressValidation\Core\Events;
 
 use OxidEsales\Eshop\Core\Base;
 use OxidEsales\Eshop\Core\DatabaseProvider;
