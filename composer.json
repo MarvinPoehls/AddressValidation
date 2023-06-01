@@ -1,5 +1,5 @@
 {
-  "name": "marvinpoehls/addressvalidation",
+  "name": "marvinpoehls/adressvalidation",
   "description": "Adress validator which checks whether the zip code and city entered in the checkout match.",
   "version": "1.0",
   "type": "oxideshop-module",
