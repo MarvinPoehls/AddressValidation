@@ -3,7 +3,7 @@
 /**
  * Metadata version
  */
-$sMetadataVersion = '2.0';
+$sMetadataVersion = '2.1';
 
 /**
  * Module information
@@ -29,8 +29,8 @@ $aModule = [
     'blocks' => [
         [
             'template' => 'module_config.tpl',
-            'block' => 'admin_module_config_var',
-            'file' => 'address_validator_module_config_var.tpl'
+            'block' => 'admin_module_config_form',
+            'file' => 'address_validator_module_config_form.tpl'
         ],
     ],
     'settings' => [],
