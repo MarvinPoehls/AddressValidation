@@ -2,51 +2,106 @@
 
 namespace MarvinPoehls\AddressValidation\Controller;
 
+use MarvinPoehls\AddressValidator\Model\Address;
+use OxidEsales\Eshop\Core\DatabaseProvider;
 use OxidEsales\Eshop\Core\Registry;
 
 class ModuleConfiguration extends ModuleConfiguration_parent
 {
-    protected bool $adressValidatorUploadError = false;
-
-    protected $sAddressValidatorCustomUploadError = false;
+    protected $verificationHeaders = ["PLZ", "City", "Country", "Country-Shortcut"];
+    protected $databaseColumns = null;
+    protected $invalidFileError = false;
+    protected $invalidHeadersError = false;
+    protected $uploadComplete = false;
 
     public function saveConfVars()
     {
         parent::saveConfVars();
-        $sModuleId = $this->_getModuleForConfigVars();
-        if ($sModuleId == "module:adressvalidation") {
-            $blReturn = $this->adressValidatorHandleFileUploads();
-            if ($blReturn === false) {
-                $this->adressValidatorUploadError = true;
-            }
-        }
-    }
 
-    protected function adressValidatorHandleFileUploads(): bool
-    {
-        if (!empty($_FILES)) {
-            foreach ($_FILES as $sConfVar => $aFileInfo) {
-                if (!empty($aFileInfo['name']) && $aFileInfo['error'] == 0) {
-                    try {
-                        $this->addressValidatorCleanUploadFileName($sConfVar);
-                        $sReturn = \OxidEsales\Eshop\Core\Registry::getUtilsFile()->processFile($sConfVar, 'modules/marvinpoehls/addressvalidator/out/img');
-                    } catch(\Exception $exc) {
-                        $this->sAddressValidatorCustomUploadError = $exc->getMessage();
-                        $sReturn = false;
-                    }
-                    if ($sReturn === false) {
-                        return false; // Upload error?
-                    }
+        if (Registry::getRequest()->getRequestParameter('oxid') === "addressvalidation") {
+            $file = Registry::getConfig()->getUploadedFile("addressFile");
 
-                    Registry::getConfig()->saveShopConfVar('str', $sConfVar, $sReturn, null, $this->_getModuleForConfigVars());
+            if ($file["type"] === "text/csv") {
+                $csvFile = fopen($file["tmp_name"],"r");
+                $headers = fgetcsv($csvFile);
+
+                if ($this->areHeadersValid($headers)) {
+                    $this->databaseColumns = $this->getDatabaseColumns($headers);
+
+                    $this->handleCsvFile($csvFile);
+
+                    fclose($csvFile);
+                    unlink($file["tmp_name"]);
+                } else {
+                    $this->invalidHeadersError = true;
                 }
+            } else {
+                $this->invalidFileError = true;
             }
         }
-        return true;
     }
 
-    protected function addressValidatorCleanUploadFileName($sConfVar)
+    protected function areHeadersValid($aHeaders): bool
     {
-        $_FILES[$sConfVar]['name'] = preg_replace('/[^\-_a-z0-9\.]/i', '', $_FILES[$sConfVar]['name']);
+        return $aHeaders === $this->verificationHeaders;
+    }
+
+    protected function getDatabaseColumns($headers)
+    {
+        $aReturn = [];
+        foreach ($headers as $sColumn) {
+            $aReturn[] = str_replace("-","_",strtolower($sColumn));
+        }
+        return $aReturn;
+    }
+
+    protected function handleCsvFile($oCsvFile)
+    {
+        $address = oxNew(Address::class);
+        $addressIds = $address->getIds();
+
+        foreach($this->getRowsAssoc($oCsvFile) as $row) {
+            $addressIdPosition = array_search($row['id'], $addressIds);
+
+            if ($addressIdPosition === false) {
+                $address->insertCsvRow($row);
+            } else {
+                unset($addressIds[$addressIdPosition]);
+            }
+        }
+
+        $address->deleteRows($addressIds);
+
+        $this->uploadComplete = true;
+    }
+
+    protected function getRowsAssoc($csvFile)
+    {
+        $return = [];
+        while ($row = fgetcsv($csvFile)) {
+            foreach ($row as $key => $value) {
+                $row[$this->databaseColumns[$key]] = utf8_encode($value);
+                unset($row[$key]);
+            }
+            $row['id'] = md5($row['plz'].$row['city'].$row['country_shortcut']);
+
+            $return[] = $row;
+        }
+        return $return;
+    }
+
+    public function getInvalidFileError()
+    {
+        return $this->invalidFileError;
+    }
+
+    public function getInvalidHeadersError()
+    {
+        return $this->invalidHeadersError;
+    }
+
+    public function getUploadComplete()
+    {
+        return $this->uploadComplete;
     }
 }

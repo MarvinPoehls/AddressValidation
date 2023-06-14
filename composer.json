@@ -10,6 +10,7 @@
     "homepage": "https://www.fatchip.de/"
     }
   ],
+  "minimum-stability": "dev",
   "extra": {
     "oxideshop": {
       "target-directory": "MarvinPoehls/AddressValidation"
