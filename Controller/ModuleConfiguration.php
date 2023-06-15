@@ -13,6 +13,11 @@ class ModuleConfiguration extends ModuleConfiguration_parent
     protected $invalidFileError = false;
     protected $invalidHeadersError = false;
     protected $uploadComplete = false;
+    protected $arrayDiffrence;
+
+    public function getDiffrence(){
+        return $this->arrayDiffrence;
+    }
 
     public function saveConfVars()
     {
@@ -48,7 +53,11 @@ class ModuleConfiguration extends ModuleConfiguration_parent
 
     protected function areHeadersValid($aHeaders): bool
     {
-        return $aHeaders === $this->verificationHeaders;
+        $diffrence = array_diff($aHeaders, $this->verificationHeaders);
+        if ($diffrence !== []) {
+            $this->arrayDiffrence = $diffrence;
+        }
+        return $diffrence === [];
     }
 
     protected function getDatabaseColumns($headers)

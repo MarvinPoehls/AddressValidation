@@ -3,7 +3,10 @@
         <div class="errorbox">[{oxmultilang ident='ADDRESSVALIDATION_FILE_ERROR'}]</div>
     [{/if}]
     [{if $oView->getInvalidHeadersError()}]
-    <div class="errorbox">[{oxmultilang ident='ADDRESSVALIDATION_HEADERS_ERROR'}]</div>
+    <div class="errorbox">
+        [{oxmultilang ident='ADDRESSVALIDATION_HEADERS_ERROR'}]
+        [{$oView->getDiffrence()}]
+    </div>
     [{/if}]
     [{if $oView->getUploadComplete()}]
     <div class="errorbox">[{oxmultilang ident='ADDRESSVALIDATION_UPLOAD_COMPLETE'}]</div>
