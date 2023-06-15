@@ -9,15 +9,11 @@ use OxidEsales\Eshop\Core\Registry;
 class ModuleConfiguration extends ModuleConfiguration_parent
 {
     protected $verificationHeaders = ["PLZ", "City", "Country", "Country-Shortcut"];
+    protected $fileHeaders;
     protected $databaseColumns = null;
     protected $invalidFileError = false;
     protected $invalidHeadersError = false;
     protected $uploadComplete = false;
-    protected $arrayDiffrence;
-
-    public function getDiffrence(){
-        return $this->arrayDiffrence;
-    }
 
     public function saveConfVars()
     {
@@ -32,10 +28,10 @@ class ModuleConfiguration extends ModuleConfiguration_parent
 
             if ($file["type"] === "text/csv") {
                 $csvFile = fopen($file["tmp_name"],"r");
-                $headers = fgetcsv($csvFile);
+                $this->fileHeaders = fgetcsv($csvFile);
 
-                if ($this->areHeadersValid($headers)) {
-                    $this->databaseColumns = $this->getDatabaseColumns($headers);
+                if ($this->areHeadersValid($this->fileHeaders)) {
+                    $this->databaseColumns = $this->getDatabaseColumns($this->fileHeaders);
 
                     $this->handleCsvFile($csvFile);
 
@@ -53,11 +49,7 @@ class ModuleConfiguration extends ModuleConfiguration_parent
 
     protected function areHeadersValid($aHeaders): bool
     {
-        $diffrence = count(array_diff($aHeaders, $this->verificationHeaders));
-        if ($diffrence !== 0) {
-            $this->arrayDiffrence = $diffrence;
-        }
-        return $diffrence == 0;
+        return count(array_diff($aHeaders, $this->verificationHeaders)) == 0;
     }
 
     protected function getDatabaseColumns($headers)
@@ -115,5 +107,13 @@ class ModuleConfiguration extends ModuleConfiguration_parent
     public function getUploadComplete()
     {
         return $this->uploadComplete;
+    }
+
+    public function getFileHeaders(){
+        return $this->fileHeaders;
+    }
+
+    public function getVerificationHeaders(){
+        return $this->verificationHeaders;
     }
 }
