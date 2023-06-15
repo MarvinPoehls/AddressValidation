@@ -5,7 +5,7 @@
     [{if $oView->getInvalidHeadersError()}]
     <div class="errorbox">
         [{oxmultilang ident='ADDRESSVALIDATION_HEADERS_ERROR'}]
-        <p>Deine Header: [{$oView->getFileHeaders()}]  Wie die Header aussehen sollen: [{$oView->getVerificationHeaders()}]</p>
+        <p>Deine Header: [{$oView->getFileHeaders()}] <br><br>Wie die Header aussehen sollen: [{$oView->getVerificationHeaders()}]</p>
     </div>
     [{/if}]
     [{if $oView->getUploadComplete()}]

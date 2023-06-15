@@ -28,7 +28,7 @@ class ModuleConfiguration extends ModuleConfiguration_parent
 
             if ($file["type"] === "text/csv") {
                 $csvFile = fopen($file["tmp_name"],"r");
-                $this->fileHeaders = fgetcsv($csvFile);
+                $this->fileHeaders = explode(";",fgetcsv($csvFile)[0]);
 
                 if ($this->areHeadersValid($this->fileHeaders)) {
                     $this->databaseColumns = $this->getDatabaseColumns($this->fileHeaders);
@@ -52,7 +52,7 @@ class ModuleConfiguration extends ModuleConfiguration_parent
         return count(array_diff($aHeaders, $this->verificationHeaders)) == 0;
     }
 
-    protected function getDatabaseColumns($headers)
+    protected function getDatabaseColumns($headers): array
     {
         $aReturn = [];
         foreach ($headers as $sColumn) {
@@ -79,7 +79,7 @@ class ModuleConfiguration extends ModuleConfiguration_parent
         $address->deleteRows($addressIds);
     }
 
-    protected function getRowsAssoc($csvFile)
+    protected function getRowsAssoc($csvFile): array
     {
         $return = [];
         while ($row = fgetcsv($csvFile)) {
@@ -109,11 +109,13 @@ class ModuleConfiguration extends ModuleConfiguration_parent
         return $this->uploadComplete;
     }
 
-    public function getFileHeaders(){
-        return $this->fileHeaders;
+    public function getFileHeaders(): string
+    {
+        return implode(",",$this->fileHeaders);
     }
 
-    public function getVerificationHeaders(){
-        return $this->verificationHeaders;
+    public function getVerificationHeaders(): string
+    {
+        return implode(",",$this->verificationHeaders);
     }
 }

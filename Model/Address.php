@@ -1,6 +1,6 @@
 <?php
 
-namespace MarvinPoehls\AddressValidator\Model;
+namespace MarvinPoehls\AddressValidation\Model;
 
 use OxidEsales\Eshop\Core\DatabaseProvider;
 use OxidEsales\Eshop\Core\Model\MultiLanguageModel;
