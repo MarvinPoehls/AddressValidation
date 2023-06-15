@@ -18,6 +18,10 @@ class ModuleConfiguration extends ModuleConfiguration_parent
     {
         parent::saveConfVars();
 
+        $this->invalidFileError = false;
+        $this->invalidHeadersError = false;
+        $this->uploadComplete = false;
+
         if (Registry::getRequest()->getRequestParameter('oxid') === "addressvalidation") {
             $file = Registry::getConfig()->getUploadedFile("addressFile");
 
@@ -30,6 +34,7 @@ class ModuleConfiguration extends ModuleConfiguration_parent
 
                     $this->handleCsvFile($csvFile);
 
+                    $this->uploadComplete = true;
                     fclose($csvFile);
                     unlink($file["tmp_name"]);
                 } else {
@@ -71,8 +76,6 @@ class ModuleConfiguration extends ModuleConfiguration_parent
         }
 
         $address->deleteRows($addressIds);
-
-        $this->uploadComplete = true;
     }
 
     protected function getRowsAssoc($csvFile)
