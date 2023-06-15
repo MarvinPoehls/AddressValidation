@@ -53,11 +53,11 @@ class ModuleConfiguration extends ModuleConfiguration_parent
 
     protected function areHeadersValid($aHeaders): bool
     {
-        $diffrence = array_diff($aHeaders, $this->verificationHeaders);
-        if ($diffrence !== []) {
+        $diffrence = count(array_diff($aHeaders, $this->verificationHeaders));
+        if ($diffrence !== 0) {
             $this->arrayDiffrence = $diffrence;
         }
-        return $diffrence === [];
+        return $diffrence == 0;
     }
 
     protected function getDatabaseColumns($headers)

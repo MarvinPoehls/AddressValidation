@@ -8,7 +8,7 @@
         [{$oView->getDiffrence()}]
     </div>
     [{/if}]
-    [{if $oView->getUploadComplete()}]
+    [{if print_r($oView->getUploadComplete())}]
     <div class="errorbox">[{oxmultilang ident='ADDRESSVALIDATION_UPLOAD_COMPLETE'}]</div>
     [{/if}]
     <dl>
