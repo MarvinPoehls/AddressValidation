@@ -10,12 +10,12 @@ class Address extends MultiLanguageModel
     public function getIds(): array
     {
         $conn = DatabaseProvider::getDb();
+        $sql = "SELECT id FROM fc_addresses";
+        $data = $conn->getAll($sql);
 
         $ids = [];
-        $data = $conn->execute("SELECT id FROM fc_addresses");
-
-        while ($row = $data->fetchAssociative()) {
-            $ids[] = $row['id'];
+        foreach ($data as $row) {
+            $ids[] = $row[0];
         }
 
         return $ids;

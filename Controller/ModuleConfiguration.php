@@ -2,7 +2,7 @@
 
 namespace MarvinPoehls\AddressValidation\Controller;
 
-use MarvinPoehls\AddressValidator\Model\Address;
+use MarvinPoehls\AddressValidation\Model\Address;
 use OxidEsales\Eshop\Core\DatabaseProvider;
 use OxidEsales\Eshop\Core\Registry;
 
@@ -87,7 +87,7 @@ class ModuleConfiguration extends ModuleConfiguration_parent
                 $row[$this->databaseColumns[$key]] = utf8_encode($value);
                 unset($row[$key]);
             }
-            $row['id'] = md5($row['plz'].$row['city'].$row['country_shortcut']);
+            $row['id'] = md5($row['plz']);
 
             $return[] = $row;
         }
