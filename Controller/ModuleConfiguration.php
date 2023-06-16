@@ -66,7 +66,7 @@ class ModuleConfiguration extends ModuleConfiguration_parent
         $address = oxNew(Address::class);
         $addressIds = $address->getIds();
 
-        foreach($this->getRowsAssoc($oCsvFile) as $row) {
+        while($row = $this->getRowAssoc($oCsvFile)) {
             $addressIdPosition = array_search($row['id'], $addressIds);
 
             if ($addressIdPosition === false) {
@@ -79,19 +79,15 @@ class ModuleConfiguration extends ModuleConfiguration_parent
         $address->deleteRows($addressIds);
     }
 
-    protected function getRowsAssoc($csvFile): array
+    protected function getRowAssoc($csvFile): array
     {
-        $return = [];
-        while ($row = fgetcsv($csvFile)) {
-            foreach ($row as $key => $value) {
-                $row[$this->databaseColumns[$key]] = utf8_encode($value);
-                unset($row[$key]);
-            }
-            $row['id'] = md5($row['plz']);
-
-            $return[] = $row;
+        $row = explode(";",fgetcsv($csvFile)[0]);
+        foreach ($row as $key => $value) {
+            $row[$this->databaseColumns[$key]] = utf8_encode($value);
+            unset($row[$key]);
         }
-        return $return;
+        $row['id'] = md5($row['plz']);
+        return $row;
     }
 
     public function getInvalidFileError()

@@ -33,7 +33,7 @@ class Setup extends Base
         $conn = DatabaseProvider::getDb();
 
         if ($conn->getOne("SHOW TABLES LIKE 'fc_addresses'") === false) {
-            $conn->Execute("CREATE TABLE fc_addresses (id INT PRIMARY KEY);");
+            $conn->execute("CREATE TABLE fc_addresses (id VARCHAR(32) PRIMARY KEY);");
         }
     }
 
@@ -42,9 +42,9 @@ class Setup extends Base
         $aColumns = DatabaseProvider::getDb()->getAll("SHOW COLUMNS FROM {$sTableName} LIKE ?", array($sColumnName));
         if (empty($aColumns)) {
             try {
-                DatabaseProvider::getDb()->Execute($sQuery);
+                DatabaseProvider::getDb()->execute($sQuery);
                 foreach ($aNewColumnDataQueries as $sQuery) {
-                    DatabaseProvider::getDb()->Execute($sQuery);
+                    DatabaseProvider::getDb()->execute($sQuery);
                 }
                 return true;
             } catch (\Exception $e) {
