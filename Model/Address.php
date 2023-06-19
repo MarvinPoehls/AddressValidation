@@ -7,6 +7,22 @@ use OxidEsales\Eshop\Core\Model\MultiLanguageModel;
 
 class Address extends MultiLanguageModel
 {
+    protected $insert = "";
+
+    public function saveInsert($insert)
+    {
+        if ($this->insert == "") {
+            $this->insert = "INSERT INTO fc_addresses VALUES";
+        }
+        $this->insert .= "(".$insert."),";
+    }
+
+    public function sendInsert()
+    {
+        DatabaseProvider::getDb()->execute($this->insert);
+        $this->insert = "";
+    }
+
     public function getIds(): array
     {
         $conn = DatabaseProvider::getDb();
@@ -23,7 +39,7 @@ class Address extends MultiLanguageModel
 
     public function insertCsvRow($row)
     {
-        $sql = 'INSERT INTO fc_addresses (`id`, `plz`, `city`, `country`, `country_shortcut`) VALUES ('.$row['id'].', '.$row['plz'].', '.$row['city'].', '.$row['country'].', '.$row['country_shortcut'].')';
+        $sql = "INSERT INTO fc_addresses VALUES ('".$row['id']."', '".$row['plz']."', '".$row['city']."', '".$row['country']."', '".$row['country_shortcut']."')";
         DatabaseProvider::getDb()->execute($sql);
     }
 

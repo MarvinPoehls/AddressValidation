@@ -64,29 +64,32 @@ class ModuleConfiguration extends ModuleConfiguration_parent
     protected function handleCsvFile($oCsvFile)
     {
         $address = oxNew(Address::class);
-        $addressIds = $address->getIds();
+        $lineNumber = 1;
 
-        while($row = $this->getRowAssoc($oCsvFile)) {
-            $addressIdPosition = array_search($row['id'], $addressIds);
+        $addressIds = $address->getIds();
+        while($row = $this->getRow($oCsvFile)) {
+            $addressIdPosition = array_search($row[0], $addressIds);
 
             if ($addressIdPosition === false) {
-                $address->insertCsvRow($row);
+                $address->saveInsert(implode(",",$row));
+                if ($lineNumber >= 999) {
+                    $address->sendInsert();
+                    $lineNumber = 0;
+                }
             } else {
                 unset($addressIds[$addressIdPosition]);
             }
+            $lineNumber++;
         }
 
         $address->deleteRows($addressIds);
     }
 
-    protected function getRowAssoc($csvFile): array
+    protected function getRow($csvFile): array
     {
         $row = explode(";",fgetcsv($csvFile)[0]);
-        foreach ($row as $key => $value) {
-            $row[$this->databaseColumns[$key]] = utf8_encode($value);
-            unset($row[$key]);
-        }
-        $row['id'] = md5($row['plz']);
+        $id = $row[3].$row[0].str_replace(' ', '', $row[1]);
+        array_unshift($row, $id);
         return $row;
     }
 
