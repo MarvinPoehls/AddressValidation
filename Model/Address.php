@@ -7,6 +7,8 @@ use OxidEsales\Eshop\Core\Model\MultiLanguageModel;
 
 class Address extends MultiLanguageModel
 {
+    protected $_sClassName = 'fc_addresses';
+
     protected $insert = "";
 
     public function saveInsert($insert)
@@ -19,14 +21,17 @@ class Address extends MultiLanguageModel
 
     public function sendInsert()
     {
-        DatabaseProvider::getDb()->execute($this->insert);
-        $this->insert = "";
+        if ($this->insert != "") {
+            $this->insert = rtrim($this->insert, ",");
+            DatabaseProvider::getDb()->execute($this->insert.";");
+            $this->insert = "";
+        }
     }
 
     public function getIds(): array
     {
         $conn = DatabaseProvider::getDb();
-        $sql = "SELECT id FROM fc_addresses";
+        $sql = "SELECT oxid FROM fc_addresses";
         $data = $conn->getAll($sql);
 
         $ids = [];
@@ -37,18 +42,14 @@ class Address extends MultiLanguageModel
         return $ids;
     }
 
-    public function insertCsvRow($row)
-    {
-        $sql = "INSERT INTO fc_addresses VALUES ('".$row['id']."', '".$row['plz']."', '".$row['city']."', '".$row['country']."', '".$row['country_shortcut']."')";
-        DatabaseProvider::getDb()->execute($sql);
-    }
-
     public function deleteRows($ids = [])
     {
         if (!empty($ids)) {
+            $delete = "delete from fc_addresses where ";
             foreach ($ids as $id) {
-                $this->delete($id);
+                $delete .= "oxid = '".$id."' OR ";
             }
+            DatabaseProvider::getDb()->execute(rtrim($delete, "OR "));
         }
     }
 }

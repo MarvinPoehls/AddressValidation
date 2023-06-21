@@ -5,6 +5,7 @@ namespace MarvinPoehls\AddressValidation\Controller;
 use MarvinPoehls\AddressValidation\Model\Address;
 use OxidEsales\Eshop\Core\DatabaseProvider;
 use OxidEsales\Eshop\Core\Registry;
+use PHPUnit\Framework\Error\Error;
 
 class ModuleConfiguration extends ModuleConfiguration_parent
 {
@@ -28,7 +29,7 @@ class ModuleConfiguration extends ModuleConfiguration_parent
 
             if ($file["type"] === "text/csv") {
                 $csvFile = fopen($file["tmp_name"],"r");
-                $this->fileHeaders = explode(";",fgetcsv($csvFile)[0]);
+                $this->fileHeaders = fgetcsv($csvFile, null, ";");
 
                 if ($this->areHeadersValid($this->fileHeaders)) {
                     $this->databaseColumns = $this->getDatabaseColumns($this->fileHeaders);
@@ -68,28 +69,37 @@ class ModuleConfiguration extends ModuleConfiguration_parent
 
         $addressIds = $address->getIds();
         while($row = $this->getRow($oCsvFile)) {
-            $addressIdPosition = array_search($row[0], $addressIds);
+            $addressIdPosition = array_search(trim($row[0], "'"), $addressIds);
 
             if ($addressIdPosition === false) {
                 $address->saveInsert(implode(",",$row));
-                if ($lineNumber >= 999) {
+                if ($lineNumber == 1000) {
                     $address->sendInsert();
                     $lineNumber = 0;
                 }
+                $lineNumber++;
             } else {
                 unset($addressIds[$addressIdPosition]);
             }
-            $lineNumber++;
         }
+        $address->sendInsert();
 
         $address->deleteRows($addressIds);
     }
 
-    protected function getRow($csvFile): array
+    protected function getRow($csvFile)
     {
-        $row = explode(";",fgetcsv($csvFile)[0]);
-        $id = $row[3].$row[0].str_replace(' ', '', $row[1]);
-        array_unshift($row, $id);
+        $row = fgetcsv($csvFile, null, ";");
+        if ($row) {
+            for ($i = 0; $i < count($row); $i++) {
+                while ($i == 0 && strlen($row[$i]) < 5){
+                    $row[$i] = "0".$row[$i];
+                }
+                $row[$i] = utf8_encode("'".str_replace(","," ", $row[$i])."'");
+            }
+            $id = "'".str_replace("'", "",$row[3].$row[0].$row[1])."'";
+            array_unshift($row, $id);
+        }
         return $row;
     }
 

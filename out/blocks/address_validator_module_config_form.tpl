@@ -9,7 +9,7 @@
     </div>
     [{/if}]
     [{if $oView->getUploadComplete()}]
-    <div class="errorbox">[{oxmultilang ident='ADDRESSVALIDATION_UPLOAD_COMPLETE'}]</div>
+    <div class="messagebox">[{oxmultilang ident='ADDRESSVALIDATION_UPLOAD_COMPLETE'}]</div>
     [{/if}]
     <dl>
         <dt class="edittext">
