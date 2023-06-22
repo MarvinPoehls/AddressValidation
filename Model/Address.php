@@ -52,4 +52,15 @@ class Address extends MultiLanguageModel
             DatabaseProvider::getDb()->execute(rtrim($delete, "OR "));
         }
     }
+
+    public function validateAddress($zip, $city, $country): bool
+    {
+        $sql = "SELECT oxid FROM 'fc_addresses' WHERE plz = ".$zip." AND city = ".$city." AND country = ".$country;
+        $result = DatabaseProvider::getDb()->execute($sql);
+
+        if ($result > 0) {
+            return true;
+        }
+        return false;
+    }
 }

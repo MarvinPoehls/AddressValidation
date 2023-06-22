@@ -32,6 +32,11 @@ $aModule = [
             'block' => 'admin_module_config_form',
             'file' => 'address_validator_module_config_form.tpl'
         ],
+        [
+            'template' => 'form/fieldset/user_billing.tpl',
+            'block' => 'form_user_billing_country',
+            'file' => 'form_user_billing_country.tpl'
+        ],
     ],
     'settings' => [],
     'events' => [
