@@ -23,6 +23,9 @@ $aModule = [
     'author'       => 'Marvin Poehls',
     'url'          => 'https://www.fatchip.de/',
     'email'        => 'marvin.poehls@fatchip.de',
+    'controller' => [
+        'addressValidator' => \MarvinPoehls\AddressValidation\Controller\AddressValidator::class,
+    ],
     'extend'       => [
         \OxidEsales\Eshop\Application\Controller\Admin\ModuleConfiguration::class => \MarvinPoehls\AddressValidation\Controller\ModuleConfiguration::class,
     ],

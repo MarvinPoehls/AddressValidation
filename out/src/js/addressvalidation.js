@@ -48,7 +48,7 @@ function addressValidation(zipSelector, citySelector, countrySelector) {
     });
 
     if (!response) {
-        errorMessage(response, $(zipSelector), $(citySelector), $(countrySelector))
+        errorMessage(response);
     }
 
     return response;
