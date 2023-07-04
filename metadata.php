@@ -23,7 +23,7 @@ $aModule = [
     'author'       => 'Marvin Poehls',
     'url'          => 'https://www.fatchip.de/',
     'email'        => 'marvin.poehls@fatchip.de',
-    'controller' => [
+    'controllers' => [
         'addressValidator' => \MarvinPoehls\AddressValidation\Controller\AddressValidator::class,
     ],
     'extend'       => [

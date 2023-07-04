@@ -1,8 +1,7 @@
 let addressForm;
-console.log("1");
 
 $(document).ready(function () {
-    addressForm = document.getElementById('invCountrySelect').form;
+    addressForm = $('#invCountrySelect').form;
     addressForm.on('submit', function(e) {
         e.preventDefault();
         if (isAddressValid()) {
