@@ -1,25 +1,24 @@
-let addressForm;
-
-$(document).ready(function () {
-    addressForm = $('#invCountrySelect').form;
-    addressForm.on('submit', function(e) {
-        e.preventDefault();
-        if (isAddressValid()) {
-            addressForm.submit();
-        } else {
-            //error
-        }
-    });
+let addressForm = $('#invCountrySelect').closest('form');
+document.getElementsByName("userform").forEach(function (submit) {
+    submit.setAttribute('type', 'button');
+    submit.setAttribute('onclick', 'validateAdress()')
 });
+
+
+function validateAddress() {
+    if (isAddressValid()) {
+        addressForm.submit();
+    } else {
+        //error
+    }
+}
 
 function isAddressValid() {
     let isBillingAddressValid = addressValidation('#invadr_oxuser__oxzip', '#invadr_oxuser__oxcity', '#invCountrySelect');
+    let isShippingAddressValid = isBillingAddressValid;
 
-    let isShippingAddressValid;
     if (isShippingAddressDiffrent()) {
         isShippingAddressValid = addressValidation('#deladr_oxaddress__oxzip', '#deladr_oxaddress__oxcity', '#delCountrySelect');
-    } else {
-        isShippingAddressValid = isBillingAddressValid;
     }
 
     return isBillingAddressValid && isShippingAddressValid;
