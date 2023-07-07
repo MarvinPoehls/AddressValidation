@@ -1,57 +1,61 @@
-let addressForm = $('#invCountrySelect').closest('form');
-document.getElementsByName("userform").forEach(function (submit) {
-    submit.setAttribute('type', 'button');
-    submit.setAttribute('onclick', 'validateAdress()')
-});
-
-
-function validateAddress() {
-    if (isAddressValid()) {
-        addressForm.submit();
-    } else {
-        //error
-    }
+function errorMessage() {
+    console.log("error");
 }
 
-function isAddressValid() {
-    let isBillingAddressValid = addressValidation('#invadr_oxuser__oxzip', '#invadr_oxuser__oxcity', '#invCountrySelect');
+function isShippingAddressDifferent() {
+    return $('#shippingAddress').css('display') !== 'none';
+}
+
+async function addressValidation(zip, city, country) {
+    return new Promise(function (resolve) {
+        $.ajax({
+            url: $('#baseUrl').val(),
+            type: "POST",
+            data: {
+                'cl': 'addressValidator',
+                'fnc': 'validateAddress',
+                'zip': zip,
+                'city': city,
+                'countryId': country
+            },
+            success: function(data){
+                resolve(JSON.parse(data));
+            },
+        });
+    })
+}
+
+async function isAddressValid() {
+    const zip = document.getElementsByName('invadr[oxuser__oxzip]')[0].value;
+    const city = document.getElementsByName('invadr[oxuser__oxcity]')[0].value;
+    const country = document.getElementsByName('invadr[oxuser__oxcountryid]')[0].value;
+
+    const isBillingAddressValid = await addressValidation(zip, city, country).then(function (data) {
+        return Boolean(data);
+    });
     let isShippingAddressValid = isBillingAddressValid;
 
-    if (isShippingAddressDiffrent()) {
-        isShippingAddressValid = addressValidation('#deladr_oxaddress__oxzip', '#deladr_oxaddress__oxcity', '#delCountrySelect');
+    if (isShippingAddressDifferent()) {
+        const delZip = document.getElementsByName('deladr[oxaddress__oxzip]')[0].value;
+        const delCity = document.getElementsByName('deladr[oxaddress__oxcity]')[0].value;
+        const delCountry = document.getElementsByName('deladr[oxaddress__oxcountryid]')[0].value;
+
+        isShippingAddressValid = await addressValidation(delZip, delCity, delCountry).then(function (data) {
+            return data === "true";
+        });
     }
 
     return isBillingAddressValid && isShippingAddressValid;
 }
 
-function isShippingAddressDiffrent() {
-    return $('#shippingAddress').css('display') !== 'none';
-}
-
-function addressValidation(zipSelector, citySelector, countrySelector) {
-    let response;
-    $.ajax({
-        url: $('#baseUrl').val(),
-        type: "POST",
-        data: {
-            'cl': 'addressValidator',
-            'fnc': 'validateAddress',
-            'zip': $(zipSelector).val(),
-            'city':  $(citySelector).val(),
-            'countryId':  $(countrySelector).val()
-        },
-        success: function(data){
-            response = JSON.parse(data);
+const addressForm = $('form[name=order]');
+document.getElementsByName("userform").forEach( function (submit) {
+    submit.setAttribute('type', 'button');
+    submit.onclick = async function () {
+        if (await isAddressValid()) {
+            addressForm.submit();
+        } else {
+            errorMessage();
         }
-    });
-
-    if (!response) {
-        errorMessage(response);
     }
-
-    return response;
-}
-
-function errorMessage() {
-
-}
+});

@@ -53,14 +53,14 @@ class Address extends MultiLanguageModel
         }
     }
 
-    public function validateAddress($zip, $city, $country): bool
+    public function validateAddress($zip, $city, $country): string
     {
-        $sql = "SELECT oxid FROM 'fc_addresses' WHERE plz = ".$zip." AND city = ".$city." AND country = ".$country;
+        $sql = "SELECT oxid FROM fc_addresses WHERE plz = ".$zip." AND city = '".$city."' AND country = '".$country."';";
         $result = DatabaseProvider::getDb()->execute($sql);
 
-        if ($result > 0) {
-            return true;
+        if (count($result) > 0) {
+            return "true";
         }
-        return false;
+        return "false";
     }
 }
