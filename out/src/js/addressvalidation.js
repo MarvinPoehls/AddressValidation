@@ -1,5 +1,8 @@
 function errorMessage() {
-    console.log("error");
+    const parent = document.getElementById('invadr_oxuser__oxfname').parentElement.parentElement
+    const errorElement = document.createElement('<div class="alert alert-danger"></div>');
+    errorElement.innerText = document.getElementById('errorText').value;
+    parent.insertBefore(errorElement, parent.firstChild);
 }
 
 function isShippingAddressDifferent() {
@@ -20,7 +23,7 @@ async function addressValidation(zip, city, country) {
             },
             success: function(data){
                 resolve(JSON.parse(data));
-            },
+            }
         });
     })
 }
@@ -31,7 +34,7 @@ async function isAddressValid() {
     const country = document.getElementsByName('invadr[oxuser__oxcountryid]')[0].value;
 
     const isBillingAddressValid = await addressValidation(zip, city, country).then(function (data) {
-        return Boolean(data);
+        return data;
     });
     let isShippingAddressValid = isBillingAddressValid;
 
@@ -41,7 +44,7 @@ async function isAddressValid() {
         const delCountry = document.getElementsByName('deladr[oxaddress__oxcountryid]')[0].value;
 
         isShippingAddressValid = await addressValidation(delZip, delCity, delCountry).then(function (data) {
-            return data === "true";
+            return data;
         });
     }
 

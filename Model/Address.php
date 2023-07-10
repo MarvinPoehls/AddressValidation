@@ -55,10 +55,10 @@ class Address extends MultiLanguageModel
 
     public function validateAddress($zip, $city, $country): string
     {
-        $sql = "SELECT oxid FROM fc_addresses WHERE plz = ".$zip." AND city = '".$city."' AND country = '".$country."';";
-        $result = DatabaseProvider::getDb()->execute($sql);
+        $sql = "SELECT oxid FROM fc_addresses WHERE plz = ? AND city = ? AND country = ?;";
+        $result = DatabaseProvider::getDb()->select($sql, array($zip, $city, $country));
 
-        if (count($result) > 0) {
+        if ($result->count() > 0) {
             return "true";
         }
         return "false";
