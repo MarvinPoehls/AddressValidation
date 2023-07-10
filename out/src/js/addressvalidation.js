@@ -1,8 +1,17 @@
 function errorMessage() {
-    const parent = document.getElementById('invadr_oxuser__oxfname').parentElement.parentElement
-    const errorElement = document.createElement('<div class="alert alert-danger"></div>');
-    errorElement.innerText = document.getElementById('errorText').value;
+    const parent = document.getElementById('invadr_oxuser__oxfname').parentElement.parentElement;
+
+    let errorElement = document.createElement('div');
+    errorElement.setAttribute('class', 'col-lg-offset-3 col-lg-9 col-xs-12');
+
+    let errorText = document.createElement('p');
+    errorText.setAttribute('class', 'alert alert-danger')
+    errorText.innerText = document.getElementById('errorText').value;
+    errorElement.appendChild(errorText);
+
     parent.insertBefore(errorElement, parent.firstChild);
+
+    window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
 function isShippingAddressDifferent() {
