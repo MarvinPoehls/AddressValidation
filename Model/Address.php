@@ -1,66 +1,135 @@
 <?php
 
-namespace MarvinPoehls\AddressValidation\Model;
+namespace Fatchip\AddressValidation\Application\Model;
 
 use OxidEsales\Eshop\Core\DatabaseProvider;
+use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
+use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
 use OxidEsales\Eshop\Core\Model\MultiLanguageModel;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class Address extends MultiLanguageModel
 {
-    protected $_sClassName = 'fc_addresses';
+    /**
+     * Used to store INSERT query for csv import
+     *
+     * @var string|null
+     */
+    protected ?string $fc_sCsvInsertQuery = null;
 
-    protected $insert = "";
+    /**
+     * Name of current class
+     *
+     * @var string
+     */
+    protected $_sClassName = 'fcaddresses';
 
-    public function saveInsert($insert)
+    public function __construct()
     {
-        if ($this->insert == "") {
-            $this->insert = "INSERT INTO fc_addresses VALUES";
-        }
-        $this->insert .= "(".$insert."),";
+        parent::__construct();
+        $this->init("fcaddresses");
     }
 
-    public function sendInsert()
+    /**
+     * Deletes multiple Addresses using given array of Ids
+     *
+     * @param array $aDeleteIds
+     * @return void
+     */
+    public function fcDeleteBulk($aDeleteIds = [])
     {
-        if ($this->insert != "") {
-            $this->insert = rtrim($this->insert, ",");
-            DatabaseProvider::getDb()->execute($this->insert.";");
-            $this->insert = "";
-        }
-    }
-
-    public function getIds(): array
-    {
-        $conn = DatabaseProvider::getDb();
-        $sql = "SELECT oxid FROM fc_addresses";
-        $data = $conn->getAll($sql);
-
-        $ids = [];
-        foreach ($data as $row) {
-            $ids[] = $row[0];
-        }
-
-        return $ids;
-    }
-
-    public function deleteRows($ids = [])
-    {
-        if (!empty($ids)) {
-            $delete = "delete from fc_addresses where ";
-            foreach ($ids as $id) {
-                $delete .= "oxid = '".$id."' OR ";
+        if (!empty($aDeleteIds)) {
+            foreach ($aDeleteIds as $sDeleteId) {
+                $this->delete($sDeleteId);
             }
-            DatabaseProvider::getDb()->execute(rtrim($delete, "OR "));
         }
     }
 
-    public function validateAddress($zip, $city, $country): string
+    /**
+     * Appends Values from given csv row to csv INSERT query
+     *
+     * @param array $aCsvRow
+     * @return void
+     */
+    public function fcSetInsertQueryValues($aCsvRow)
     {
-        $sql = "SELECT oxid FROM fc_addresses WHERE plz = ? AND city = ? AND country = ?;";
-        $result = DatabaseProvider::getDb()->select($sql, array($zip, $city, $country));
-
-        if ($result->count() > 0) {
-            return "true";
+        if ($this->fc_sCsvInsertQuery === null) {
+            $this->fc_sCsvInsertQuery = 'INSERT INTO fcaddresses (`OXID`, `PLZ`, `CITY`, `COUNTRY`, `COUNTRYSHORTCUT`) VALUES ';
         }
-        return "false";
+
+        $this->fc_sCsvInsertQuery .= "('{$aCsvRow['OXID']}', '{$aCsvRow['PLZ']}', '{$aCsvRow['CITY']}', '{$aCsvRow['COUNTRY']}', '{$aCsvRow['COUNTRYSHORTCUT']}')";
+    }
+
+    /**
+     * Executes the csv INSERT query if it was set
+     *
+     * @return void
+     * @throws DatabaseConnectionException
+     * @throws DatabaseErrorException
+     */
+    public function fcExecuteCsvInsertQuery()
+    {
+        if ($this->fc_sCsvInsertQuery !== null) {
+            DatabaseProvider::getDb()->execute(str_replace(')(', '),(', $this->fc_sCsvInsertQuery));
+        }
+    }
+
+    /**
+     * Loads all Ids from db and returns them as an array
+     *
+     * @return array
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function fcGetIds()
+    {
+        $oDb = ContainerFactory::getInstance()->getContainer()->get(QueryBuilderFactoryInterface::class)->create();
+
+        $aIds = [];
+        $oData = $oDb->select("OXID")->from('fcaddresses')->execute();
+
+        while ($aRow = $oData->fetchAssociative()) {
+            $aIds[] = $aRow['OXID'];
+        }
+
+        return $aIds;
+    }
+
+    /**
+     * Loads and returns total number of Addresses in db
+     *
+     * @return mixed
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function fcGetAddressCount()
+    {
+        $oDb = ContainerFactory::getInstance()->getContainer()->get(QueryBuilderFactoryInterface::class)->create();
+        $oDb->select('COUNT(OXID) FROM fcaddresses');
+        return $oDb->execute()->fetchAssociative()['COUNT(OXID)'];
+    }
+
+    public function fcLoadByColumnValues($aParams) {
+        $sWhere = 'WHERE';
+        foreach ($aParams as $sColumn => $sValue) {
+            if ($sColumn !== array_key_first($aParams)) {
+                $sWhere .= ' AND';
+            }
+            $sWhere .= " {$sColumn} = '{$sValue}'";
+        }
+
+        $oDb = ContainerFactory::getInstance()->getContainer()->get(QueryBuilderFactoryInterface::class)->create();
+        $oDb->select("* FROM fcaddresses {$sWhere} LIMIT 1");
+
+        $oData = $oDb->execute();
+
+        if ($oData->rowCount() > 0) {
+            $this->assign($oData->fetchAssociative());
+            return true;
+        }
+        return false;
     }
 }

@@ -1,6 +1,7 @@
 {
   "name": "marvinpoehls/addressvalidation",
   "description": "Address validator which checks whether the zip code and city entered in the checkout match.",
+  "version": "1.0",
   "type": "oxideshop-module",
   "authors": [
     {
@@ -9,7 +10,6 @@
     "homepage": "https://www.fatchip.de/"
     }
   ],
-  "minimum-stability": "dev",
   "extra": {
     "oxideshop": {
       "target-directory": "MarvinPoehls/AddressValidation"

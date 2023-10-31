@@ -3,7 +3,7 @@
 /**
  * Metadata version
  */
-$sMetadataVersion = '2.1';
+$sMetadataVersion = '2.0';
 
 /**
  * Module information
@@ -23,26 +23,18 @@ $aModule = [
     'author'       => 'Marvin Poehls',
     'url'          => 'https://www.fatchip.de/',
     'email'        => 'marvin.poehls@fatchip.de',
-    'controllers' => [
-        'addressValidator' => \MarvinPoehls\AddressValidation\Controller\AddressValidator::class,
-    ],
     'extend'       => [
         \OxidEsales\Eshop\Application\Controller\Admin\ModuleConfiguration::class => \MarvinPoehls\AddressValidation\Controller\ModuleConfiguration::class,
     ],
     'blocks' => [
         [
             'template' => 'module_config.tpl',
-            'block' => 'admin_module_config_form',
-            'file' => 'address_validator_module_config_form.tpl'
-        ],
-        [
-            'template' => 'form/fieldset/user_billing.tpl',
-            'block' => 'form_user_billing_country',
-            'file' => 'form_user_billing_country.tpl'
+            'block' => 'admin_module_config_var',
+            'file' => 'address_validator_module_config_var.tpl'
         ],
     ],
     'settings' => [],
     'events' => [
-        'onActivate' => 'MarvinPoehls\AddressValidation\Core\Events\Setup::onActivate',
+        'onActivate' => 'MarvinPoehls\AddressValidation\Core\Events::onActivate',
     ]
 ];
